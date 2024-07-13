@@ -17,18 +17,20 @@ class MainWindow:
         # Configuración de estilos:
         style = ttk.Style()
         style.theme_use('clam')
-        style.configure('TButton', background='#DDA15E', foreground='black', font=('Garamond', 13), borderwidth=1, focusthickness=3, focuscolor='none')
+        style.configure('TButton', background='#DDA15E', foreground='black', font=('Garamond', 13), borderwidth=1,
+                        focusthickness=3, focuscolor='none')
         style.map('TButton', background=[('active', '#45a049')])
         style.configure('TEntry', font=('Garamond', 11), padding=3)
-        style.configure('Custom.TLabelframe', background='#FEFAE0', relief="ridge")
-        style.configure('Custom.TLabelframe.Label', foreground='#6c584c', background='#FEFAE0', font=('Garamond', 20, 'bold'))
-        style.configure('Custom.TFrame', background='#FEFAE0', relief="ridge")
+        style.configure('Custom.TLabelframe', background='#FEFAE0', relief="sunken")
+        style.configure('Custom.TLabelframe.Label', foreground='#6c584c', background='#FEFAE0',
+                        font=('Garamond', 20, 'bold'))
+        style.configure('Custom.TFrame', background='#FEFAE0', relief="flat")
 
-        #Botón de inicio
+        # Botón de inicio
         style.configure('Light.TButton', background='#BC6C25', foreground='black', font=('Garamond', 13), borderwidth=1, focusthickness=3, focuscolor='none')
         style.map('Light.TButton', background=[('active', '#1E8C7B')])
 
-        style.configure('Green.TButton', background='#606C38', foreground='white', font=('Garamond', 13), borderwidth=1, focusthickness=3, focuscolor='none')
+        style.configure('Green.TButton', background='#606C38', foreground='black', font=('Garamond', 13), borderwidth=1, focusthickness=3, focuscolor='none')
         style.map('Green.TButton', background=[('active', '#4F5A2E')])
 
         # Creación del contenedor Frame principal utilizando ttk.LabelFrame
@@ -62,6 +64,7 @@ class MainWindow:
         self.see_character_frame.grid()
 
     def show_main_window(self):
+        self.add_character_frame.grid_remove()
         self.see_character_frame.grid_remove()
         self.main_frame.grid()
 
@@ -95,7 +98,7 @@ class AddCharacter(ttk.Frame):
         self.save_button.pack(side="left", padx=(0, 10))
 
         # Añadir botón Volver a Inicio
-        self.back_button = ttk.Button(barra, text="Volver", command=self.main_window.show_main_window, style='Green.TButton')
+        self.back_button = ttk.Button(barra, text="Volver a Inicio", command=self.main_window.show_main_window)
         self.back_button.pack(side="left", padx=(10, 0))
 
         frame_ep = ttk.LabelFrame(central_frame, text="Generador de fichas de personaje", style='Custom.TLabelframe')
@@ -180,7 +183,7 @@ class SeeCharacter(ttk.Frame):
         self.central_frame.grid(row=1, column=0, padx=0, pady=0, sticky="nsew")
 
         message_box = ttk.Frame(self.central_frame, style='Custom.TLabelframe')
-        message_box.grid(row=0, column=0, columnspan=2, padx=0, sticky="ew")
+        message_box.grid(row=0, column=0, padx=0, sticky="ew")
 
         self.ok_message = ttk.Label(message_box, text="", font=("Garamond", 15), foreground='green')
         self.ok_message.pack(side="top", fill="x")
@@ -188,27 +191,22 @@ class SeeCharacter(ttk.Frame):
         self.error_message = ttk.Label(message_box, text="", font=("Garamond", 15), foreground='red')
         self.error_message.pack(side="top", fill="x")
 
-        # Crear un frame para la barra de búsqueda
-        self.search_frame = ttk.Frame(self.central_frame)
-        self.search_frame.grid(row=1, column=0, padx=5, pady=0, sticky="w")
-
-        # Añadir barra de búsqueda al search_frame
-        self.search_entry = ttk.Entry(self.search_frame, font=('Garamond', 15))
-        self.search_entry.grid(row=0, column=0, padx=5, pady=0, sticky=tk.W + tk.E, columnspan=2)
+        # Añadir barra de búsqueda
+        self.search_entry = ttk.Entry(self.central_frame, font=('Garamond', 15))
+        self.search_entry.grid(row=1, column=0, padx=10, pady=0, sticky=tk.W + tk.E, columnspan=2)
 
         # Crear un frame para los botones
-        self.button_frame = ttk.Frame(self.central_frame)
-        self.button_frame.grid(row=1, column=1, padx=5, pady=(0, 5), sticky="e")
+        button_frame = ttk.Frame(self.central_frame, style='Custom.TLabelframe')
+        button_frame.grid(row=1, column=2, padx=5, pady=(0, 5), sticky="ne")
 
-        # Añadir botones al button_frame
-        self.search_button = ttk.Button(self.button_frame, text="Buscar", command=self.search_character, width=10)
-        self.search_button.grid(row=0, column=0, padx=(5, 0), pady=(0, 5), sticky=tk.E)
+        self.search_button = ttk.Button(button_frame, text="Buscar", command=self.search_character, style='Light.TButton')
+        self.search_button.grid(row=0, column=0, padx=5)
 
-        self.del_button = ttk.Button(self.button_frame, text="Eliminar", command=self.del_character, style='Light.TButton', width=10)
-        self.del_button.grid(row=0, column=1, padx=(5, 0), pady=(0, 5), sticky=tk.E)
+        self.delete_button = ttk.Button(button_frame, text="Eliminar", command=self.del_character, style='Light.TButton')
+        self.delete_button.grid(row=0, column=1, padx=5)
 
-        self.back_button = ttk.Button(self.button_frame, text="Volver", command=self.main_window.show_main_window, style='Green.TButton')
-        self.back_button.grid(row=0, column=2, padx=(5, 10), pady=(0, 5), sticky=tk.E)
+        self.back_button = ttk.Button(button_frame, text="Volver", command=self.main_window.show_main_window, style='Light.TButton')
+        self.back_button.grid(row=0, column=2, padx=5)
 
         # Inicializar la tabla donde se mostrarán los resultados
         self.tabla = ttk.Treeview(self.central_frame, columns=("Name", "Race", "Class", "Level"), show='headings')
@@ -216,7 +214,7 @@ class SeeCharacter(ttk.Frame):
         self.tabla.heading("Race", text="Raza")
         self.tabla.heading("Class", text="Clase")
         self.tabla.heading("Level", text="Nivel")
-        self.tabla.grid(row=2, column=0, columnspan=2, padx=0, pady=0, sticky=tk.W + tk.E)
+        self.tabla.grid(row=2, column=0, columnspan=3, padx=0, pady=0, sticky=tk.W + tk.E)
         self.get_character()
 
     def search_character(self):
@@ -259,4 +257,3 @@ class SeeCharacter(ttk.Frame):
         self.db_consulta(query, (nombre,))
         self.ok_message['text'] = f'Personaje {nombre} eliminado con éxito'
         self.get_character()
-
