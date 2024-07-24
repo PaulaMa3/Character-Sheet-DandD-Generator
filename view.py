@@ -297,12 +297,15 @@ class AddCharacter(ttk.Frame):
             self.error_message['text'] = 'Todos los atributos deben ser números enteros.'
             return False
 
+        total_sum = sum(attributes)
+
         if any(attr < 8 or attr > 15 for attr in attributes):
             self.error_message['text'] = 'Cada atributo debe estar entre 8 y 15.'
             return False
 
-        if sum(attributes) != 75:
-            self.error_message['text'] = 'La suma de todos los atributos debe ser exactamente 75.'
+        if total_sum != 75:
+            self.error_message[
+                'text'] = f'La suma de todos los atributos debe ser exactamente 75. Actualmente sumas {total_sum} puntos.'
             return False
 
         self.error_message['text'] = ''
