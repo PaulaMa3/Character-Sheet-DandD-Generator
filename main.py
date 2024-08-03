@@ -1,5 +1,5 @@
 from ttkthemes import ThemedTk
-from view import MainWindow
+from main_window import MainWindow
 from db import init_db
 from resources.populate_db import populate_db
 

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Table, ForeignKey
+from sqlalchemy import Column, Integer, String, Table, ForeignKey, Float
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -22,6 +22,9 @@ character_inventory_association = Table('character_inventory_association', Base.
                                         Column('character.id', Integer, ForeignKey('characters.id')),
                                         Column('inventory.id', Integer, ForeignKey('inventories.id')))
 
+character_armor_association = Table('character_armor_association', Base.metadata,
+                                    Column('character.id', Integer, ForeignKey('characters.id')),
+                                    Column('armor.id', Integer, ForeignKey('armors.id')))
 
 # Definición de la clase Character
 class Character(Base):
@@ -37,6 +40,7 @@ class Character(Base):
     languages = relationship('Language', secondary=language_character_association, back_populates='characters')
     skills = relationship('Skill', secondary=skill_character_association, back_populates='characters')
     attributes = relationship('Attribute', secondary=attribute_character_association, back_populates='characters')
+    armors = relationship('Armor', secondary=character_armor_association, back_populates='characters')
     inventories = relationship('Inventory', back_populates='character')  # Cambiar 'Inventories' a 'Inventory'
 
     def __init__(self, name, level, image, race_id, class_id):
@@ -100,7 +104,9 @@ class_item_association = Table('class_item_association', Base.metadata,
                                Column('class_id', Integer, ForeignKey('classes.id')),
                                Column('item_id', Integer, ForeignKey('items.id'))
                                )
-
+armor_class_association = Table('armor_class_association', Base.metadata,
+                                Column('class_id', Integer, ForeignKey('classes.id')),
+                                Column('armor_id', Integer, ForeignKey('armors.id')))
 
 # Definición de la clase Class
 class Class(Base):
@@ -108,23 +114,17 @@ class Class(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(50), nullable=False)
     hit_dice = Column(String(3), nullable=True)
-    armor = Column(String(50), nullable=False)
-    weapons = Column(String(500), nullable=False)
-    tools = Column(String(50), nullable=False)
     skills = relationship('Skill', secondary=class_skill_association, back_populates='classes')
     characters = relationship('Character', back_populates='c_class')
     items = relationship('Item', secondary=class_item_association, back_populates='classes')
+    armors = relationship('Armor', secondary=armor_class_association, back_populates='classes', lazy='dynamic')  # Cambiar a 'dynamic'
 
-    def __init__(self, name, hit_dice, armor, weapons, tools):
+    def __init__(self, name, hit_dice):
         self.name = name
         self.hit_dice = hit_dice
-        self.armor = armor
-        self.weapons = weapons
-        self.tools = tools
 
     def __repr__(self):
         return f"Clase {self.name}"
-
 
 # Definición de la clase Skill
 class Skill(Base):
@@ -231,3 +231,29 @@ class Item(Base):
 
     def __repr__(self):
         return f"Objeto {self.name}: {self.description}"
+
+
+class Armor(Base):
+    __tablename__ = 'armors'  # Cambiar a plural
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)  # Añadir el nombre de la armadura
+    armor_class = Column(Integer, nullable=False)
+    type = Column(String(50), nullable=False)
+    strength = Column(Integer, nullable=True)
+    stealth = Column(Integer, nullable=True)
+    weight = Column(Float, nullable=True)
+    classes = relationship('Class', secondary=armor_class_association, back_populates='armors')
+    characters = relationship('Character', secondary=character_armor_association, back_populates='armors')
+
+    def __init__(self, name, armor_class, type, strength, stealth, weight):
+        self.name = name  # Asegúrate de inicializar el nombre
+        self.armor_class = armor_class
+        self.type = type
+        self.strength = strength
+        self.stealth = stealth
+        self.weight = weight
+
+    def __repr__(self):
+        return f"Armadura {self.name}. Clase de armadura: {self.armor_class}"
+
