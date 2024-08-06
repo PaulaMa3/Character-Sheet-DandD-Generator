@@ -2,7 +2,7 @@ import sqlite3
 import tkinter as tk
 from tkinter import ttk, filedialog
 from PIL import Image, ImageTk
-from db_utils import get_races, get_classes, get_class_armor
+from db_utils import get_races, get_classes, get_class_armor, get_skills
 
 
 class AddCharacter(ttk.Frame):
@@ -67,7 +67,7 @@ class AddCharacter(ttk.Frame):
         self.combobox_race.grid(row=3, column=2, padx=5, pady=5, sticky="e")
 
         # Configurar combobox_race con el comando para actualizar bonificaciones
-        self.combobox_race.bind("<<ComboboxSelected>>", self.update_attribute_bonuses)
+        self.combobox_race.bind("<<ComboboxSelected>>", self.update_race_bonuses)
 
         self.label_class = ttk.Label(frame_ep, text="Clase:", font=("Garamond", 15), background='#FEFAE0')
         self.label_class.grid(row=4, column=1, padx=5, pady=5, sticky="w")
@@ -163,25 +163,44 @@ class AddCharacter(ttk.Frame):
         self.charisma_info = ttk.Label(charisma, text="", font=("Garamond", 10), background='#FEFAE0')
         self.charisma_info.grid(row=1, column=1, padx=5, pady=5, sticky="e")
 
+        # Crear el frame para las habilidades
+        skills_frame = ttk.Frame(attributes, style='Custom.TFrame')
+        skills_frame.grid(row=2, column=1, rowspan=6, padx=5, pady=5, sticky="nsew")
+
+        self.skills_label = ttk.Label(skills_frame, text="", font=("Garamond", 12), background='#FEFAE0')
+        self.skills_label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+
+        self.skills_info = ttk.Treeview(skills_frame, columns=("Skill", "Attribute", "Count."), show="headings", height=13)
+        self.skills_info.heading("Skill", text="Habilidad")
+        self.skills_info.heading("Attribute", text="Atributo")
+        self.skills_info.heading
+        self.skills_info.column("Skill", width=100)
+        self.skills_info.column("Attribute", width=100)
+
+        self.skills_info.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
+
+        self.populate_skills()
+
         # Segundo Frame
         second_frame = ttk.Frame(attributes, style='Custom.TFrame')
-        second_frame.grid(row=0, column=1, rowspan=6, padx=5, pady=5, sticky="nsew")
+        second_frame.grid(row=0, column=1, rowspan=2, padx=5, pady=(5,0), sticky="nsew")
 
-        self.armor_class_label = ttk.Label(second_frame, text="Clase de armadura", font=("Garamond", 15),
-                                           background='#FEFAE0')
-        self.armor_class_label.grid(row=0, column=1, padx=5, pady=5, sticky="w")
+        self.armor_class_label = ttk.Label(second_frame, text="Clase de armadura", font=("Garamond", 15), background='#FEFAE0')
+        self.armor_class_label.grid(row=0, column=1, padx=(15, 30), pady=5, sticky="w")
         self.armor_class_info_label = ttk.Label(second_frame, text="", font=("Garamond", 10), background='#FEFAE0')
-        self.armor_class_info_label.grid(row=1, column=1, padx=5, pady=5, sticky="w")
+        self.armor_class_info_label.grid(row=1, column=1, padx=(15, 30), pady=5, sticky="w")
 
         self.initiative_label = ttk.Label(second_frame, text="Iniciativa", font=("Garamond", 15), background='#FEFAE0')
-        self.initiative_label.grid(row=0, column=2, padx=5, pady=5, sticky="ew")
-        self.initiative_info_label = ttk.Label(second_frame, text="", font=("Garamond", 10), background='#FEFAE0')
-        self.initiative_info_label.grid(row=1, column=2, padx=5, pady=5, sticky="ew")
+        self.initiative_label.grid(row=0, column=2, padx=(15, 30), pady=5, sticky="ew")
+        self.initiative_info_label = ttk.Label(second_frame, text="", font=("Garamond", 10), background='white')
+        self.initiative_info_label.grid(row=1, column=2, padx=(15, 30), pady=5, sticky="ew")
+
+        self.combobox_race.bind("<<ComboboxSelected>>", self.update_race_bonuses)
 
         self.speed_label = ttk.Label(second_frame, text="Velocidad", font=("Garamond", 15), background='#FEFAE0')
-        self.speed_label.grid(row=0, column=3, padx=5, pady=5, sticky="e")
-        self.speed_info_label = ttk.Label(second_frame, text="", font=("Garamond", 10), background='#FEFAE0')
-        self.speed_info_label.grid(row=1, column=3, padx=5, pady=5, sticky="e")
+        self.speed_label.grid(row=0, column=3, padx=(15, 30), pady=5, sticky="e")
+        self.speed_info_label = ttk.Label(second_frame, text="", font=("Garamond", 12), background='#FEFAE0')
+        self.speed_info_label.grid(row=1, column=3, padx=(15, 30), pady=5, sticky="e")
 
         #Equipamiento y armas
         equipment_frame = ttk.Frame(attributes, style='Custom.TFrame')
@@ -189,10 +208,10 @@ class AddCharacter(ttk.Frame):
 
         self.combobox_c_class.bind("<<ComboboxSelected>>", self.update_equipment)
 
-        self.equipment_label = ttk.Label (equipment_frame, text="Armadura", font=("Garamond", 15), background='#FEFAE0' )
-        self.equipment_label.grid(row=0, column=1, columnspan=3, padx=(15, 5), pady=5, sticky="e" )
-        self.equipment_info_label = ttk.Label(equipment_frame, text="", font=("Garamond", 10), background='#FEFAE0')
-        self.equipment_info_label.grid(row=1, column=1,  columnspan=3, padx=(15, 5), pady=5, sticky="e")
+        self.equipment_label = ttk.Label(equipment_frame, text="Armadura", font=("Garamond", 15), background='#FEFAE0' )
+        self.equipment_label.grid(row=0, column=1, columnspan=3, padx=(15, 30), pady=5, sticky="e" )
+        self.equipment_info_label = ttk.Label(equipment_frame, text="", font=("Garamond", 12), background='#FEFAE0')
+        self.equipment_info_label.grid(row=1, column=1,  columnspan=3, padx=(15, 30), pady=5, sticky="e")
 
     def select_image(self):
         # Abrir cuadro de diálogo para seleccionar archivo
@@ -245,7 +264,13 @@ class AddCharacter(ttk.Frame):
         self.error_message['text'] = ''
         return True
 
-    def update_attribute_bonuses(self, event=None):
+    def populate_skills(self):
+        skills = get_skills()
+        print("Skills loaded:", skills)  # Añade esta línea para depuración
+        for skill, attribute in skills.items():
+            self.skills_info.insert('', 'end', values=(skill, attribute))
+
+    def update_race_bonuses(self, event=None):
         selected_race = self.combobox_race.get()
         bonuses = self.race_bonuses.get(selected_race, {})
 
@@ -255,6 +280,7 @@ class AddCharacter(ttk.Frame):
         self.intelligence_info.config(text=f"+{bonuses.get('Inteligencia', 0)}")
         self.wisdom_info.config(text=f"+{bonuses.get('Sabiduría', 0)}")
         self.charisma_info.config(text=f"+{bonuses.get('Carisma', 0)}")
+        self.speed_info_label.config(text=f"{bonuses.get('Velocidad', 0)}")
 
     def update_equipment(self, event=None):
         selected_class = self.combobox_c_class.get()
@@ -266,6 +292,7 @@ class AddCharacter(ttk.Frame):
         armor_class = self.class_armor_class
 
         self.armor_class_info.config(text=f"{armor_class.get('Armor Class', 0)}")"""
+
 
     def save_character(self):
         if not self.validate_attributes():
@@ -304,6 +331,17 @@ class AddCharacter(ttk.Frame):
                     'INSERT INTO attribute_character_association (attribute_id, character_id, value) VALUES (?, ?, ?)',
                     (attr_id, character_id, attr_value)
                 )
+        # Insertar habilidades en la tabla intermedia skill_character_association junto con sus valores
+        for skill_name, skill_entry in self.skills_entries:
+            skill_value = skill_entry.get()
+            skill_id = self.db_query('SELECT id FROM skills WHERE name = ?', (skill_name,)).fetchone()
+            if skill_id:  # Asegurarse de que se obtuvo un resultado
+                skill_id = skill_id[0]  # Obtener el valor entero
+                self.db_query(
+                    'INSERT INTO skill_character_association (skill_id, character_id, value) VALUES (?, ?, ?)',
+                    (skill_id, character_id, skill_value)
+                )
+
 
         # Mostrar un mensaje de éxito y limpiar los campos del formulario
         self.ok_message['text'] = f'Personaje {self.entry_name.get()} añadido con éxito'

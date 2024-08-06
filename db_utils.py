@@ -1,5 +1,5 @@
 from sqlalchemy.orm import sessionmaker
-from models import Race, Class
+from models import Race, Class, Skill, Attribute
 from db import engine
 
 def get_races():
@@ -15,7 +15,7 @@ def get_races():
             'Inteligencia': race.extra_intelligence,
             'Sabiduría': race.extra_wisdom,
             'Carisma': race.extra_charisma,
-        }
+            'Velocidad': race.speed}
         for race in races
     }
 
@@ -30,9 +30,20 @@ def get_class_armor(class_name):
     Session = sessionmaker(bind=engine)
     session = Session()
     class_obj = session.query(Class).filter_by(name=class_name).first()
-    if class_obj and class_obj.armors.count() > 0:  # Verifica si hay armaduras asignadas
+    if class_obj and class_obj.armors.count() > 0:  # nVerifica si hay armaduras asigadas
         armor_name = class_obj.armors[0].name
     else:
         armor_name = "Sin armadura"  # Maneja el caso donde no hay armaduras asignadas
     return armor_name
+
+def get_skills():
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    skills = session.query(Skill).all()
+    skills_with_attributes = {skill.name: skill.attribute.name for skill in skills}
+    session.close()
+    return skills_with_attributes
+
+
+
 
