@@ -275,10 +275,14 @@ class AddCharacter(ttk.Frame):
         query = 'INSERT INTO characters (name, race_id, class_id, level) VALUES (?, ?, ?, ?)'
         parametros = (
             self.entry_name.get(), self.combobox_race.get(), self.combobox_c_class.get(), self.entry_level.get())
-        self.db_query(query, parametros)
 
-        # Obtener el ID del personaje recién creado
-        character_id = self.db_query('SELECT last_insert_rowid()').fetchone()[0]
+        # Ejecutar la consulta de inserción y obtener el ID del personaje recién creado
+        with sqlite3.connect(self.db_characters) as con:
+            cursor = con.cursor()
+            cursor.execute(query, parametros)
+            character_id = cursor.lastrowid
+            con.commit()
+
         print(f"Character ID: {character_id}")
 
         # Lista de atributos con sus valores correspondientes

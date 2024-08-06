@@ -85,42 +85,54 @@ class SeeCharacter(ttk.Frame):
 
         query = '''
         SELECT characters.name, races.name AS race_name, classes.name AS class_name, characters.level, 
-               COALESCE(attr_str.value, 0) AS strength, COALESCE(attr_dex.value, 0) AS dexterity, COALESCE(attr_con.value, 0) AS constitution, 
-               COALESCE(attr_int.value, 0) AS intelligence, COALESCE(attr_wis.value, 0) AS wisdom, COALESCE(attr_cha.value, 0) AS charisma
-        FROM characters
-        LEFT JOIN races ON characters.race_id = races.id
-        LEFT JOIN classes ON characters.class_id = classes.id
-        LEFT JOIN attribute_character_association AS attr_str ON characters.id = attr_str.character_id AND attr_str.attribute_id = (SELECT id FROM attributes WHERE name = 'Fuerza')
-        LEFT JOIN attribute_character_association AS attr_dex ON characters.id = attr_dex.character_id AND attr_dex.attribute_id = (SELECT id FROM attributes WHERE name = 'Destreza')
-        LEFT JOIN attribute_character_association AS attr_con ON characters.id = attr_con.character_id AND attr_con.attribute_id = (SELECT id FROM attributes WHERE name = 'Constitución')
-        LEFT JOIN attribute_character_association AS attr_int ON characters.id = attr_int.character_id AND attr_int.attribute_id = (SELECT id FROM attributes WHERE name = 'Inteligencia')
-        LEFT JOIN attribute_character_association AS attr_wis ON characters.id = attr_wis.character_id AND attr_wis.attribute_id = (SELECT id FROM attributes WHERE name = 'Sabiduría')
-        LEFT JOIN attribute_character_association AS attr_cha ON characters.id = attr_cha.character_id AND attr_cha.attribute_id = (SELECT id FROM attributes WHERE name = 'Carisma')
-        ORDER BY characters.name DESC
-        '''
+               COALESCE(attr_str.value, 0) AS strength, COALESCE(attr_dex.value, 0) AS dexterity, 
+               COALESCE(attr_con.value, 0) AS constitution, COALESCE(attr_int.value, 0) AS intelligence, 
+               COALESCE(attr_wis.value, 0) AS wisdom, COALESCE(attr_cha.value, 0) AS charisma 
+        FROM characters 
+        LEFT JOIN races ON characters.race_id = races.id 
+        LEFT JOIN classes ON characters.class_id = classes.id 
+        LEFT JOIN attribute_character_association AS attr_str ON characters.id = attr_str.character_id 
+            AND attr_str.attribute_id = (SELECT id FROM attributes WHERE name = 'Fuerza') 
+        LEFT JOIN attribute_character_association AS attr_dex ON characters.id = attr_dex.character_id 
+            AND attr_dex.attribute_id = (SELECT id FROM attributes WHERE name = 'Destreza') 
+        LEFT JOIN attribute_character_association AS attr_con ON characters.id = attr_con.character_id 
+            AND attr_con.attribute_id = (SELECT id FROM attributes WHERE name = 'Constitución') 
+        LEFT JOIN attribute_character_association AS attr_int ON characters.id = attr_int.character_id 
+            AND attr_int.attribute_id = (SELECT id FROM attributes WHERE name = 'Inteligencia') 
+        LEFT JOIN attribute_character_association AS attr_wis ON characters.id = attr_wis.character_id 
+            AND attr_wis.attribute_id = (SELECT id FROM attributes WHERE name = 'Sabiduría') 
+        LEFT JOIN attribute_character_association AS attr_cha ON characters.id = attr_cha.character_id 
+            AND attr_cha.attribute_id = (SELECT id FROM attributes WHERE name = 'Carisma') 
+        ORDER BY characters.name DESC'''
         registros_db = self.db_consulta(query)
 
         for fila in registros_db:
             print(fila)  # Agrega esto para ver el contenido de cada fila
-            self.tabla.insert('', 'end', values=(
-            fila[0], fila[1], fila[2], fila[3], fila[4], fila[5], fila[6], fila[7], fila[8], fila[9]))
+            self.tabla.insert('', 'end', values=(fila[0], fila[1], fila[2], fila[3], fila[4], fila[5], fila[6], fila[7], fila[8], fila[9]))
 
     def search_character(self):
         search_term = self.search_entry.get()
         query = '''
         SELECT characters.name, races.name AS race_name, classes.name AS class_name, characters.level, 
-               COALESCE(attr_str.value, 0) AS strength, COALESCE(attr_dex.value, 0) AS dexterity, COALESCE(attr_con.value, 0) AS constitution, 
-               COALESCE(attr_int.value, 0) AS intelligence, COALESCE(attr_wis.value, 0) AS wisdom, COALESCE(attr_cha.value, 0) AS charisma
-        FROM characters
-        LEFT JOIN races ON characters.race_id = races.id
-        LEFT JOIN classes ON characters.class_id = classes.id
-        LEFT JOIN attribute_character_association AS attr_str ON characters.id = attr_str.character_id AND attr_str.attribute_id = (SELECT id FROM attributes WHERE name = 'Fuerza')
-        LEFT JOIN attribute_character_association AS attr_dex ON characters.id = attr_dex.character_id AND attr_dex.attribute_id = (SELECT id FROM attributes WHERE name = 'Destreza')
-        LEFT JOIN attribute_character_association AS attr_con ON characters.id = attr_con.character_id AND attr_con.attribute_id = (SELECT id FROM attributes WHERE name = 'Constitución')
-        LEFT JOIN attribute_character_association AS attr_int ON characters.id = attr_int.character_id AND attr_int.attribute_id = (SELECT id FROM attributes WHERE name = 'Inteligencia')
-        LEFT JOIN attribute_character_association AS attr_wis ON characters.id = attr_wis.character_id AND attr_wis.attribute_id = (SELECT id FROM attributes WHERE name = 'Sabiduría')
-        LEFT JOIN attribute_character_association AS attr_cha ON characters.id = attr_cha.character_id AND attr_cha.attribute_id = (SELECT id FROM attributes WHERE name = 'Carisma')
-        WHERE characters.name LIKE ?
+               COALESCE(attr_str.value, 0) AS strength, COALESCE(attr_dex.value, 0) AS dexterity, 
+               COALESCE(attr_con.value, 0) AS constitution, COALESCE(attr_int.value, 0) AS intelligence, 
+               COALESCE(attr_wis.value, 0) AS wisdom, COALESCE(attr_cha.value, 0) AS charisma 
+        FROM characters 
+        LEFT JOIN races ON characters.race_id = races.id 
+        LEFT JOIN classes ON characters.class_id = classes.id 
+        LEFT JOIN attribute_character_association AS attr_str ON characters.id = attr_str.character_id 
+            AND attr_str.attribute_id = (SELECT id FROM attributes WHERE name = 'Fuerza') 
+        LEFT JOIN attribute_character_association AS attr_dex ON characters.id = attr_dex.character_id 
+            AND attr_dex.attribute_id = (SELECT id FROM attributes WHERE name = 'Destreza') 
+        LEFT JOIN attribute_character_association AS attr_con ON characters.id = attr_con.character_id 
+            AND attr_con.attribute_id = (SELECT id FROM attributes WHERE name = 'Constitución') 
+        LEFT JOIN attribute_character_association AS attr_int ON characters.id = attr_int.character_id 
+            AND attr_int.attribute_id = (SELECT id FROM attributes WHERE name = 'Inteligencia') 
+        LEFT JOIN attribute_character_association AS attr_wis ON characters.id = attr_wis.character_id 
+            AND attr_wis.attribute_id = (SELECT id FROM attributes WHERE name = 'Sabiduría') 
+        LEFT JOIN attribute_character_association AS attr_cha ON characters.id = attr_cha.character_id 
+            AND attr_cha.attribute_id = (SELECT id FROM attributes WHERE name = 'Carisma') 
+        WHERE characters.name LIKE ? 
         ORDER BY characters.name DESC
         '''
         registros_db = self.db_consulta(query, ('%' + search_term + '%',))
@@ -128,89 +140,7 @@ class SeeCharacter(ttk.Frame):
         # Limpiar la tabla actual y mostrar los resultados de la búsqueda
         self.tabla.delete(*self.tabla.get_children())
         for fila in registros_db:
-            self.tabla.insert('', 'end', values=(
-            fila[0], fila[1], fila[2], fila[3], fila[4], fila[5], fila[6], fila[7], fila[8], fila[9]))
-
-    def db_consulta(self, consulta, parametros=()):
-        with sqlite3.connect(self.db_characters) as con:
-            cursor = con.cursor()
-            resultado = cursor.execute(consulta, parametros)
-            con.commit()
-            return cursor.fetchall()  # Asegúrate de devolver todos los resultados
-
-    def del_character(self):
-        try:
-            selected_item = self.tabla.selection()[0]
-        except IndexError:
-            self.error_message['text'] = 'Por favor, seleccione un personaje'
-            return
-
-        nombre = self.tabla.item(selected_item)['values'][0]
-        query = 'DELETE FROM characters WHERE name = ?'
-        self.db_consulta(query, (nombre,))
-        self.ok_message['text'] = f'Personaje {nombre} eliminado con éxito'
-        self.get_character()
-
-
-    def get_character(self):
-        registros_tabla = self.tabla.get_children()
-        for fila in registros_tabla:
-            self.tabla.delete(fila)
-
-        query = '''
-        SELECT characters.name, races.name AS race_name, classes.name AS class_name, characters.level, 
-               COALESCE(attr_str.value, 0) AS strength, COALESCE(attr_dex.value, 0) AS dexterity, COALESCE(attr_con.value, 0) AS constitution, 
-               COALESCE(attr_int.value, 0) AS intelligence, COALESCE(attr_wis.value, 0) AS wisdom, COALESCE(attr_cha.value, 0) AS charisma
-        FROM characters
-        LEFT JOIN races ON characters.race_id = races.id
-        LEFT JOIN classes ON characters.class_id = classes.id
-        LEFT JOIN attribute_character_association AS attr_str ON characters.id = attr_str.character_id AND attr_str.attribute_id = (SELECT id FROM attributes WHERE name = 'Fuerza')
-        LEFT JOIN attribute_character_association AS attr_dex ON characters.id = attr_dex.character_id AND attr_dex.attribute_id = (SELECT id FROM attributes WHERE name = 'Destreza')
-        LEFT JOIN attribute_character_association AS attr_con ON characters.id = attr_con.character_id AND attr_con.attribute_id = (SELECT id FROM attributes WHERE name = 'Constitución')
-        LEFT JOIN attribute_character_association AS attr_int ON characters.id = attr_int.character_id AND attr_int.attribute_id = (SELECT id FROM attributes WHERE name = 'Inteligencia')
-        LEFT JOIN attribute_character_association AS attr_wis ON characters.id = attr_wis.character_id AND attr_wis.attribute_id = (SELECT id FROM attributes WHERE name = 'Sabiduría')
-        LEFT JOIN attribute_character_association AS attr_cha ON characters.id = attr_cha.character_id AND attr_cha.attribute_id = (SELECT id FROM attributes WHERE name = 'Carisma')
-        ORDER BY characters.name DESC
-        '''
-        registros_db = self.db_consulta(query)
-
-        for fila in registros_db:
-            print(fila)  # Agrega esto para ver el contenido de cada fila
-            self.tabla.insert('', 'end', values=(
-            fila[0], fila[1], fila[2], fila[3], fila[4], fila[5], fila[6], fila[7], fila[8], fila[9]))
-
-    def search_character(self):
-        search_term = self.search_entry.get()
-        query = '''
-        SELECT characters.name, races.name AS race_name, classes.name AS class_name, characters.level, 
-               COALESCE(attr_str.value, 0) AS strength, COALESCE(attr_dex.value, 0) AS dexterity, COALESCE(attr_con.value, 0) AS constitution, 
-               COALESCE(attr_int.value, 0) AS intelligence, COALESCE(attr_wis.value, 0) AS wisdom, COALESCE(attr_cha.value, 0) AS charisma
-        FROM characters
-        LEFT JOIN races ON characters.race_id = races.id
-        LEFT JOIN classes ON characters.class_id = classes.id
-        LEFT JOIN attribute_character_association AS attr_str ON characters.id = attr_str.character_id AND attr_str.attribute_id = (SELECT id FROM attributes WHERE name = 'Fuerza')
-        LEFT JOIN attribute_character_association AS attr_dex ON characters.id = attr_dex.character_id AND attr_dex.attribute_id = (SELECT id FROM attributes WHERE name = 'Destreza')
-        LEFT JOIN attribute_character_association AS attr_con ON characters.id = attr_con.character_id AND attr_con.attribute_id = (SELECT id FROM attributes WHERE name = 'Constitución')
-        LEFT JOIN attribute_character_association AS attr_int ON characters.id = attr_int.character_id AND attr_int.attribute_id = (SELECT id FROM attributes WHERE name = 'Inteligencia')
-        LEFT JOIN attribute_character_association AS attr_wis ON characters.id = attr_wis.character_id AND attr_wis.attribute_id = (SELECT id FROM attributes WHERE name = 'Sabiduría')
-        LEFT JOIN attribute_character_association AS attr_cha ON characters.id = attr_cha.character_id AND attr_cha.attribute_id = (SELECT id FROM attributes WHERE name = 'Carisma')
-        WHERE characters.name LIKE ?
-        ORDER BY characters.name DESC
-        '''
-        registros_db = self.db_consulta(query, ('%' + search_term + '%',))
-
-        # Limpiar la tabla actual y mostrar los resultados de la búsqueda
-        self.tabla.delete(*self.tabla.get_children())
-        for fila in registros_db:
-            self.tabla.insert('', 'end', values=(
-            fila[0], fila[1], fila[2], fila[3], fila[4], fila[5], fila[6], fila[7], fila[8], fila[9]))
-
-    def db_consulta(self, consulta, parametros=()):
-        with sqlite3.connect(self.db_characters) as con:
-            cursor = con.cursor()
-            resultado = cursor.execute(consulta, parametros)
-            con.commit()
-            return cursor.fetchall()  # Asegúrate de devolver todos los resultados
+            self.tabla.insert('', 'end', values=(fila[0], fila[1], fila[2], fila[3], fila[4], fila[5], fila[6], fila[7], fila[8], fila[9]))
 
     def db_consulta(self, consulta, parametros=()):
         with sqlite3.connect(self.db_characters) as con:
